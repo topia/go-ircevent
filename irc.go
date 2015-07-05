@@ -172,11 +172,6 @@ func (irc *Connection) pingLoop() {
 		case <-ticker2.C:
 			//Ping at the ping frequency
 			irc.SendRawf("PING %d", time.Now().UnixNano())
-			//Try to recapture nickname if it's not as configured.
-			if irc.nick != irc.nickcurrent {
-				irc.nickcurrent = irc.nick
-				irc.SendRawf("NICK %s", irc.nick)
-			}
 		case <-irc.end:
 			ticker.Stop()
 			ticker2.Stop()
