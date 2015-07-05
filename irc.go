@@ -417,6 +417,9 @@ func (irc *Connection) Connect(server string) error {
 	if len(irc.user) == 0 {
 		return errors.New("empty 'user'")
 	}
+	if len(irc.realname) == 0 {
+		irc.realname = irc.user
+	}
 
 	if irc.UseTLS {
 		dialer := &net.Dialer{Timeout: irc.Timeout}
@@ -441,7 +444,7 @@ func (irc *Connection) Connect(server string) error {
 		irc.pwrite <- fmt.Sprintf("PASS %s\r\n", irc.Password)
 	}
 	irc.pwrite <- fmt.Sprintf("NICK %s\r\n", irc.nick)
-	irc.pwrite <- fmt.Sprintf("USER %s 0.0.0.0 0.0.0.0 :%s\r\n", irc.user, irc.user)
+	irc.pwrite <- fmt.Sprintf("USER %s 0.0.0.0 0.0.0.0 :%s\r\n", irc.user, irc.realname)
 	return nil
 }
 
@@ -449,6 +452,14 @@ func (irc *Connection) Connect(server string) error {
 // The nickname is later used to address the user. Returns nil if nick
 // or user are empty.
 func IRC(nick, user string) *Connection {
+	return IRCWithRealName(nick, user, "")
+}
+
+
+// Create a connection with the (publicly visible) nickname, username and realname.
+// The nickname is later used to address the user. Returns nil if nick
+// or user are empty.
+func IRCWithRealName(nick, user, realname string) *Connection {
 	// catch invalid values
 	if len(nick) == 0 {
 		return nil
@@ -456,11 +467,15 @@ func IRC(nick, user string) *Connection {
 	if len(user) == 0 {
 		return nil
 	}
+	if len(realname) == 0 {
+		realname = user;
+	}
 
 	irc := &Connection{
 		nick:        nick,
 		nickcurrent: nick,
 		user:        user,
+		realname:    realname,
 		Log:         log.New(os.Stdout, "", log.LstdFlags),
 		end:         make(chan struct{}),
 		Version:     VERSION,
