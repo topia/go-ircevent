@@ -175,6 +175,9 @@ func (irc *Connection) setupCallbacks() {
 		// If irc.nickcurrent hasn't been set yet, set to irc.nick
 		if irc.nickcurrent == "" {
 			irc.nickcurrent = irc.nick
+		} else {
+			// do not automatic handling unless on connection
+			return;
 		}
 
 		if len(irc.nickcurrent) > 8 {
@@ -191,6 +194,9 @@ func (irc *Connection) setupCallbacks() {
 		// If irc.nickcurrent hasn't been set yet, set to irc.nick
 		if irc.nickcurrent == "" {
 			irc.nickcurrent = irc.nick
+		} else {
+			// do not automatic handling unless on connection
+			return;
 		}
 
 		if len(irc.nickcurrent) > 8 {
